@@ -130,13 +130,3 @@ class DQAgent:
                 return 0
         print("Task failed")
         return 0
-
-
-epsilon = 1
-alpha = 0.0001
-gamma = 0.8
-agent = DQAgent(alpha, gamma, epsilon)
-score, height = agent.train(100)
-print("Best training score: {}, height: {}".format(score, height))
-agent.save_model("./models/test1")
-agent.test_one()

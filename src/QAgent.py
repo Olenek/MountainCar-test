@@ -112,11 +112,3 @@ class QAgent:
                 return 0
         print("Task failed")
         return 0
-
-
-epsilon = 0.1
-alpha = 0.5
-gamma = 0.8
-agent = QAgent(alpha, gamma, epsilon)
-agent.train(500, 'test1')
-agent.test_one()
