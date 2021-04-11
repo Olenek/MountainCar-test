@@ -8,9 +8,10 @@ import random
 
 class QAgent:
     def __init__(self, alpha, gamma, epsilon, epsilon_decay_speed=5, saving_path="./q-tables"):
+        """ action space: 0 is push left, 1 is  no push and 2 is push right
+            state space: [x, v]; x \in [-1.2; 0.6]; v \in [-0.07, 0.07]
+        """
         self._env = gym.make('MountainCar-v0')
-        self.action_space = self._env.action_space.n  # 0 is push left, 1 is  no push and 2 is push right
-        self.observation_space = self._env.observation_space  # [x, v]; x \in [-1.2; 0.6]; v \in [-0.07, 0.07]
 
         self.alpha = alpha  # learning rate
         self.gamma = gamma  # discount rate
@@ -19,7 +20,7 @@ class QAgent:
         self.v_states = np.linspace(-0.07, 0.07, num=20)
         self.x_states = np.linspace(-1.2, 0.6, num=20)
         self.states_size = len(self.v_states) * len(self.x_states)
-        self.Q = np.zeros([self.states_size, self.action_space])
+        self.Q = np.zeros([self.states_size, 3])
         self.saving_path = saving_path
         self.eps_d_s = epsilon_decay_speed
 
@@ -63,7 +64,7 @@ class QAgent:
                 action = self.choose_action(state)
 
                 next_obs, reward, done, info = self._env.step(action)
-                modified_reward = reward + self.gamma * abs(next_obs[1]) - abs(obs[1])  # reward based on potentials
+                modified_reward = reward + self.gamma * abs(next_obs[1]) - abs(obs[1])
                 next_state = self._get_Q_index(next_obs)
 
                 # update Q
@@ -88,7 +89,8 @@ class QAgent:
                 if logging:
                     print("Episode: {}".format(i))
                     print(" Total score for episode {} : {}, max height : {}".format(i, total_score, max_height))
-                    print(" GLOBAL MAXIMA: max score : {}, max height  : {}".format(global_max_score, global_max_height))
+                    print(
+                        " GLOBAL MAXIMA: max score : {}, max height  : {}".format(global_max_score, global_max_height))
                     print('-' * 150)
                 self.save_Q_table(model_name)
 
@@ -99,7 +101,7 @@ class QAgent:
         step = 0
         while not done:
             self._env.render() if render else 0
-            action = np.argmax(self.Q[state])
+            action = np.argmax(self.Q[state])  # ignores epsilon policy
             step += 1
             next_obs, reward, done, info = self._env.step(action)
             next_state = self._get_Q_index(next_obs)
